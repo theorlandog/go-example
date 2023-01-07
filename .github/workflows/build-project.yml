@@ -23,3 +23,4 @@ jobs:
       - uses: actions/upload-artifact@v2
         with: 
           name: go-example
+          path: ./go-example
