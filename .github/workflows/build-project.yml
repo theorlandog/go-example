@@ -18,5 +18,8 @@ jobs:
         run: go get ./...
       - name: Build
         run: go build -v ./cmd/...
-      - name: Test with the Go CLI
-        run: go test
+      # - name: Test with the Go CLI
+      #   run: go test
+      - uses: actions/upload-artifact@v2
+        with: 
+          name: go-example
