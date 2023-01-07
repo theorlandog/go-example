@@ -10,4 +10,8 @@ import (
 
 func main() {
     fmt.Println("Hello World")
+    // use an imported constant
+    fmt.Println("VERSION:", config.VERSION)
+    // use an imported function
+    fmt.Println("Answer is", utils.AddNumbers(2, 3))
 }
