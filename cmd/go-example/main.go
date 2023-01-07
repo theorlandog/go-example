@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+    "fmt"
+    "github.com/theorlandog/go-example/pkg/config"
+    "github.com/theorlandog/go-example/pkg/utils"
+)
 
 // this is a comment
 
