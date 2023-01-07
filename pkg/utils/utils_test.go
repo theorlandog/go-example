@@ -8,9 +8,8 @@ import (
 // for a valid return value.
 func TestAddNumbers(t *testing.T) {
     expectedAnswer := 10
-    want := expectedAnswer
-    msg := AddNumbers(3,7)
-    if want != msg  {
-        t.Fatalf(`addNumbers(3, 7) = %q, want match for %#q, nil`, msg, want)
+    answer := AddNumbers(3,7)
+    if expectedAnswer != answer  {
+        t.Fatalf(`addNumbers(3, 7) = %q, want match for %#q, nil`, answer, expectedAnswer)
     }
 }
