@@ -1,0 +1,44 @@
+name: pre-release
+run-name: Building the project for Pre Release
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  pre-release:
+    name: "Pre Release"
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: "1.21.x"
+      - run: cd ${{ github.workspace }}
+      - run: ls -la
+      - run: |
+          gofmt -w .
+          git add .
+          git config --global user.name 'GitHub Autobot'
+          git config --global user.email 'autobot@no-reply.github.com'
+          git diff-index --quiet HEAD || git commit -am "gofmt checks" && git push
+      - name: Install dependencies
+        run: go get ./...
+      - name: Build
+        run: go build -v -o ./output/app
+      # - name: Test with the Go CLI
+      #   run: go test
+      # - uses: actions/upload-artifact@v2
+      #   with:
+      #     name: app
+      #     path: ./output/app
+      - uses: "marvinpinto/action-automatic-releases@v1.2.1"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: true
+          automatic_release_tag: latest
+          title: "Development Build"
+          files: |
+            LICENSE
+            ./output/app
