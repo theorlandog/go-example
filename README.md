@@ -1,2 +1,2 @@
 # go-example
-Example repo created while learning the golang toolchain
+Example repo created while learning the golang toolchain.
