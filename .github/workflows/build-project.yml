@@ -2,7 +2,11 @@ name: build-project
 run-name: Building the project
 on:
   push:
-    branches: [ main ]
+    branches:    
+      - '*'         # matches every branch that doesn't contain a '/'
+      - '*/*'       # matches every branch containing a single '/'
+      - '**'        # matches every branch
+      - '!main'     # excludes main
 jobs:
   build-project:
     runs-on: ubuntu-22.04
