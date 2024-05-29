@@ -1,0 +1,61 @@
+name: Build and Push to GitHub Container Registry
+
+## Trigger on new release
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  deploy:
+    # Add 'id-token' with the intended permissions for workload identity federation
+    permissions:
+      contents: write
+      packages: write
+      # This is used to complete the identity challenge
+      # with sigstore/fulcio when running outside of PRs.
+      id-token: write
+
+    runs-on: ubuntu-latest
+    steps:
+      - id: lower-repo
+        run: |
+          echo "IMAGE=${GITHUB_REPOSITORY@L}" >> $GITHUB_OUTPUT
+    
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: "1.21.x"
+
+      - name: Install dependencies
+        run: go get ./...
+  
+      - name: Build the Go application
+        run: go build -v -o ./build/app
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Container
+        if: github.event_name != 'pull_request'
+        run: |-
+            docker build -t "${{ env.REGISTRY }}/${{ steps.lower-repo.outputs.image }}:${{ github.sha }}" -f ./Containerfile ./
+            docker tag "${{ env.REGISTRY }}/${{ steps.lower-repo.outputs.image }}:${{ github.sha }}" "${{ env.REGISTRY }}/${{ steps.lower-repo.outputs.image }}:latest"
+            docker push "${{ env.REGISTRY }}/${{ steps.lower-repo.outputs.image }}:${{ github.sha }}"
+            docker push "${{ env.REGISTRY }}/${{ steps.lower-repo.outputs.image }}:latest"
+
+        # If required, use the Cloud Run url output in later steps
+      - name: Show Output
+        run: echo ${{ steps.deploy.outputs.url }}
