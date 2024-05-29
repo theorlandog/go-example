@@ -38,7 +38,7 @@ jobs:
         run: go get ./...
   
       - name: Build the Go application
-        run: go build -v ./cmd/... -o ./output/app
+        run: go build -o ./output/app -v ./cmd/...
 
       - name: Log into registry ${{ env.REGISTRY }}
         if: github.event_name != 'pull_request'
